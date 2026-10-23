@@ -142,6 +142,26 @@
   .card .money { margin-top: 4px; font-weight: 600; }
   .notes { margin-top: 14px; padding: 0 18px; color: var(--muted); font-size: .92rem; }
   .disclaimer { margin-top: 26px; font-size: .85rem; color: var(--muted); text-align: center; }
+
+  details.help {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 4px 14px;
+    margin-bottom: 10px;
+  }
+  details.help summary {
+    cursor: pointer;
+    font-weight: 700;
+    color: var(--green);
+    padding: 10px 0;
+  }
+  details.help ol, details.help ul { margin: 0 0 10px; padding-right: 20px; }
+  details.help li { margin-bottom: 6px; }
+  details.help dt { font-weight: 700; margin-top: 8px; }
+  details.help dd { margin: 0 0 4px; color: var(--muted); font-size: .93rem; }
+  .row .hint { display: block; color: var(--muted); font-size: .78rem; line-height: 1.5; margin-top: 1px; }
+  .row .who { flex: 1; padding-left: 8px; }
 </style>
 </head>
 <body>
@@ -151,6 +171,49 @@
 </header>
 
 <main>
+  <details class="help" open>
+    <summary>كيف أدخل البيانات؟</summary>
+    <ol>
+      <li>أدخل الورثة <b>الأحياء وقت وفاة المتوفى</b> فقط. من مات قبله لا يُدخَل.</li>
+      <li>اضغط <b>+</b> أمام كل قريب بعدد الموجودين منه. مثلًا لثلاث بنات اضغط + ثلاث مرات. وما ليس موجودًا اتركه <b>0</b>.</li>
+      <li>اكتب <b>قيمة التركة الصافية</b>، وهي ما بقي بعد تجهيز الميت وسداد ديونه وتنفيذ وصيته. وهي اختيارية: إن تركتها فارغة ظهرت الأنصبة كسورًا فقط.</li>
+      <li>اضغط <b>احسب</b> فتظهر بطاقة لكل وارث فيها نصيبه وسبب استحقاقه.</li>
+    </ol>
+    <ul>
+      <li>لا يجتمع زوج وزوجة في مسألة واحدة.</li>
+      <li>الأب والأم والجد: واحد فقط لكل منهم.</li>
+      <li>الأقارب من جهة البنات والأخوات (ابن البنت، ابن الأخت، الخال، العمة...) هم <b>ذوو أرحام</b>، وليسوا مشمولين في هذه النسخة.</li>
+    </ul>
+  </details>
+
+  <details class="help">
+    <summary>معاني المصطلحات</summary>
+    <dl>
+      <dt>ابن الابن وبنت الابن</dt>
+      <dd>أولاد ابن المتوفى (حفيده وحفيدته من ابنه). لا يرثون إن وُجد ابن للمتوفى.</dd>
+      <dt>الجد والجدة</dt>
+      <dd>الجد هو أبو الأب. والجدة لأب هي أم الأب، والجدة لأم هي أم الأم. وعند أبي حنيفة الجد يحجب الإخوة والأخوات كما يحجبهم الأب.</dd>
+      <dt>شقيق / لأب / لأم</dt>
+      <dd>الأخ الشقيق من الأب والأم معًا. والأخ لأب من الأب فقط وأمه غير أم المتوفى. والأخ لأم من الأم فقط.</dd>
+      <dt>العم الشقيق والعم لأب</dt>
+      <dd>العم أخو الأب. والشقيق من أبيه وأمه، ولأب من أبيه فقط. وابن العم هو ابنه.</dd>
+      <dt>صاحب الفرض</dt>
+      <dd>وارث نصيبه مقدَّر في الشرع: النصف، الربع، الثمن، الثلثان، الثلث، السدس.</dd>
+      <dt>العصبة</dt>
+      <dd>من يأخذ الباقي بعد أصحاب الفروض، أو يأخذ التركة كلها إن لم يكن معه صاحب فرض.</dd>
+      <dt>المحجوب</dt>
+      <dd>وارث لا يأخذ شيئًا لوجود من هو أقرب منه أو أقوى (مثل الابن يحجب ابن الابن).</dd>
+      <dt>العول</dt>
+      <dd>إذا زادت الفروض على التركة، ينقص نصيب كل صاحب فرض بنسبة واحدة حتى تكفي.</dd>
+      <dt>الرد</dt>
+      <dd>إذا بقي شيء من التركة ولا عاصب، يُردّ على أصحاب الفروض بنسبة فروضهم، ولا يدخل في الرد الزوج ولا الزوجة (إلا بالخيار المذكور أسفل الصفحة).</dd>
+      <dt>العمريتان</dt>
+      <dd>مسألتان: زوج أو زوجة مع أب وأم فقط. للأم فيهما ثلث الباقي بعد فرض الزوج أو الزوجة، لا ثلث التركة.</dd>
+      <dt>الباقي غير الموزَّع</dt>
+      <dd>جزء لا يستحقه أحد من المذكورين، مرجعه ذوو الأرحام أو بيت المال.</dd>
+    </dl>
+  </details>
+
   <div id="heirs"></div>
 
   <label class="field">قيمة التركة الصافية (بعد التجهيز والديون والوصية)
@@ -188,6 +251,26 @@
   ];
   var MAX = { husband: 1, wife: 4, father: 1, mother: 1, grandfather: 1, grandmotherPat: 2, grandmotherMat: 2 };
   var DEFAULT_MAX = 20;
+  var HINTS = {
+    wife: 'إن تعددت الزوجات (حتى أربع) فهنّ شريكات في نصيب واحد',
+    sonOfSon: 'ابن ابن المتوفى. لا يرث مع وجود ابن للمتوفى',
+    daughterOfSon: 'بنت ابن المتوفى. لا ترث مع وجود ابن للمتوفى',
+    grandfather: 'أبو الأب فقط. لا يرث مع وجود الأب',
+    grandmotherPat: 'أم الأب، وأم أبي الأب',
+    grandmotherMat: 'أم الأم، وأم أمها',
+    fullBrother: 'من الأب والأم معًا',
+    fullSister: 'من الأب والأم معًا',
+    paternalBrother: 'من الأب فقط (أمه غير أم المتوفى)',
+    paternalSister: 'من الأب فقط (أمها غير أم المتوفى)',
+    maternalBrother: 'من الأم فقط',
+    maternalSister: 'من الأم فقط',
+    nephewFull: 'ابن الأخ الشقيق (وليس ابن الأخت)',
+    nephewPat: 'ابن الأخ لأب',
+    uncleFull: 'أخو الأب من أبيه وأمه',
+    unclePat: 'أخو الأب من أبيه فقط',
+    cousinFull: 'ابن العم الشقيق',
+    cousinPat: 'ابن العم لأب'
+  };
 
   var names = Hanafi.HEIRS;
   var counts = {};
@@ -214,7 +297,10 @@
       g.keys.forEach(function (k) {
         counts[k] = 0;
         var row = el('div', 'row');
-        row.appendChild(el('span', 'name', names[k]));
+        var who = el('span', 'who');
+        who.appendChild(el('span', 'name', names[k]));
+        if (HINTS[k]) who.appendChild(el('span', 'hint', HINTS[k]));
+        row.appendChild(who);
         var ctr = el('div', 'counter');
         var plus = el('button', null, '+');
         var num = el('span', null, '0');
