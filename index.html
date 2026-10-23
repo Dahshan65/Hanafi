@@ -1,0 +1,328 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>حاسبة المواريث - المذهب الحنفي</title>
+<style>
+  :root {
+    --bg: #f6f3ec;
+    --card: #ffffff;
+    --ink: #1f2a24;
+    --muted: #6b756f;
+    --green: #1f5c45;
+    --green-soft: #e3efe9;
+    --gold: #b88a2b;
+    --red: #a33a3a;
+    --line: #ddd6c6;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #141a17;
+      --card: #1d2622;
+      --ink: #eef2ee;
+      --muted: #9aa8a0;
+      --green: #6cc3a0;
+      --green-soft: #22352d;
+      --gold: #d9b45a;
+      --red: #e08585;
+      --line: #33423b;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "Segoe UI", Tahoma, "Noto Naskh Arabic", Arial, sans-serif;
+    line-height: 1.7;
+  }
+  header {
+    background: var(--green);
+    color: #fff;
+    text-align: center;
+    padding: 22px 16px 18px;
+  }
+  header h1 { margin: 0; font-size: 1.6rem; }
+  header p { margin: 4px 0 0; opacity: .85; font-size: .95rem; }
+  main { max-width: 640px; margin: 0 auto; padding: 16px; }
+  h2 {
+    font-size: 1.05rem;
+    color: var(--green);
+    margin: 22px 0 8px;
+    border-right: 4px solid var(--gold);
+    padding-right: 8px;
+  }
+  .row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 8px 12px;
+    margin-bottom: 6px;
+  }
+  .row.off { opacity: .45; }
+  .row .name { font-size: 1rem; }
+  .counter { display: flex; align-items: center; gap: 10px; }
+  .counter button {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    border: 1px solid var(--green);
+    background: var(--card);
+    color: var(--green);
+    font-size: 1.3rem;
+    line-height: 1;
+    cursor: pointer;
+  }
+  .counter button:disabled { opacity: .3; cursor: not-allowed; }
+  .counter span { min-width: 22px; text-align: center; font-weight: 700; font-size: 1.1rem; }
+  label.field { display: block; margin-top: 20px; font-weight: 600; }
+  input[type=number] {
+    width: 100%;
+    margin-top: 6px;
+    padding: 12px;
+    font-size: 1.1rem;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: var(--card);
+    color: var(--ink);
+    direction: ltr;
+    text-align: right;
+  }
+  label.chk { display: flex; gap: 8px; align-items: flex-start; margin-top: 14px; font-size: .92rem; color: var(--muted); }
+  label.chk input { margin-top: 6px; }
+  .actions { display: flex; gap: 10px; margin-top: 18px; }
+  .actions button {
+    flex: 1;
+    padding: 14px;
+    font-size: 1.05rem;
+    border-radius: 12px;
+    border: 0;
+    cursor: pointer;
+    background: var(--green);
+    color: #fff;
+    font-family: inherit;
+  }
+  .actions button.sec { background: var(--card); color: var(--ink); border: 1px solid var(--line); flex: 0 0 90px; }
+  #error {
+    margin-top: 14px;
+    color: var(--red);
+    font-weight: 600;
+  }
+  .summary {
+    margin-top: 24px;
+    background: var(--green-soft);
+    border-radius: 12px;
+    padding: 12px 14px;
+    font-weight: 600;
+  }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 12px 14px;
+    margin-top: 10px;
+  }
+  .card.blocked { opacity: .6; }
+  .card .top { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+  .card .who { font-weight: 700; }
+  .card .badge {
+    font-size: .8rem;
+    padding: 2px 10px;
+    border-radius: 999px;
+    background: var(--green-soft);
+    color: var(--green);
+    white-space: nowrap;
+  }
+  .card.blocked .badge { background: transparent; color: var(--red); border: 1px solid var(--red); }
+  .card .share { font-size: 1.5rem; color: var(--green); font-weight: 700; margin-top: 4px; direction: ltr; text-align: right; }
+  .card .meta { color: var(--muted); font-size: .9rem; }
+  .card .money { margin-top: 4px; font-weight: 600; }
+  .notes { margin-top: 14px; padding: 0 18px; color: var(--muted); font-size: .92rem; }
+  .disclaimer { margin-top: 26px; font-size: .85rem; color: var(--muted); text-align: center; }
+</style>
+</head>
+<body>
+<header>
+  <h1>حاسبة المواريث</h1>
+  <p>على المذهب الحنفي</p>
+</header>
+
+<main>
+  <div id="heirs"></div>
+
+  <label class="field">قيمة التركة الصافية (بعد التجهيز والديون والوصية)
+    <input id="estate" type="number" inputmode="decimal" min="0" placeholder="مثال: 10000">
+  </label>
+
+  <label class="chk">
+    <input type="checkbox" id="spouseRadd">
+    <span>رد الباقي على الزوج أو الزوجة إذا لم يوجد وارث غيره</span>
+  </label>
+
+  <div class="actions">
+    <button id="calc">احسب</button>
+    <button id="reset" class="sec">مسح</button>
+  </div>
+
+  <div id="error"></div>
+  <div id="result"></div>
+
+  <p class="disclaimer">
+    هذه الحاسبة للاسترشاد، ولا تغني عن مراجعة أهل العلم أو المحكمة الشرعية.
+    لا تشمل ذوي الأرحام والحمل والمفقود والمناسخات.
+  </p>
+</main>
+
+<script src="hanafi.js"></script>
+<script>
+(function () {
+  var GROUPS = [
+    { title: 'الزوجان', keys: ['husband', 'wife'] },
+    { title: 'الفروع', keys: ['son', 'daughter', 'sonOfSon', 'daughterOfSon'] },
+    { title: 'الأصول', keys: ['father', 'mother', 'grandfather', 'grandmotherPat', 'grandmotherMat'] },
+    { title: 'الإخوة والأخوات', keys: ['fullBrother', 'fullSister', 'paternalBrother', 'paternalSister', 'maternalBrother', 'maternalSister'] },
+    { title: 'أقارب آخرون (عصبات)', keys: ['nephewFull', 'nephewPat', 'uncleFull', 'unclePat', 'cousinFull', 'cousinPat'] }
+  ];
+  var MAX = { husband: 1, wife: 4, father: 1, mother: 1, grandfather: 1, grandmotherPat: 2, grandmotherMat: 2 };
+  var DEFAULT_MAX = 20;
+
+  var names = Hanafi.HEIRS;
+  var counts = {};
+  var rowEls = {};
+  var countEls = {};
+  var minusEls = {};
+  var plusEls = {};
+
+  function $(id) { return document.getElementById(id); }
+  function el(tag, cls, text) {
+    var e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (text !== undefined) e.textContent = text;
+    return e;
+  }
+  function fmt(n) {
+    return n.toLocaleString('en-US', { maximumFractionDigits: 2 });
+  }
+
+  function buildForm() {
+    var box = $('heirs');
+    GROUPS.forEach(function (g) {
+      box.appendChild(el('h2', null, g.title));
+      g.keys.forEach(function (k) {
+        counts[k] = 0;
+        var row = el('div', 'row');
+        row.appendChild(el('span', 'name', names[k]));
+        var ctr = el('div', 'counter');
+        var plus = el('button', null, '+');
+        var num = el('span', null, '0');
+        var minus = el('button', null, '−');
+        plus.type = 'button'; minus.type = 'button';
+        plus.setAttribute('aria-label', 'زيادة ' + names[k]);
+        minus.setAttribute('aria-label', 'إنقاص ' + names[k]);
+        plus.addEventListener('click', function () { change(k, 1); });
+        minus.addEventListener('click', function () { change(k, -1); });
+        ctr.appendChild(plus); ctr.appendChild(num); ctr.appendChild(minus);
+        row.appendChild(ctr);
+        box.appendChild(row);
+        rowEls[k] = row; countEls[k] = num; minusEls[k] = minus; plusEls[k] = plus;
+      });
+    });
+    refresh();
+  }
+
+  function change(k, d) {
+    var max = MAX[k] || DEFAULT_MAX;
+    var v = counts[k] + d;
+    if (v < 0 || v > max) return;
+    counts[k] = v;
+    refresh();
+  }
+
+  function refresh() {
+    Object.keys(counts).forEach(function (k) {
+      countEls[k].textContent = counts[k];
+      var max = MAX[k] || DEFAULT_MAX;
+      var blockedBySpouse = (k === 'wife' && counts.husband > 0) || (k === 'husband' && counts.wife > 0);
+      plusEls[k].disabled = counts[k] >= max || blockedBySpouse;
+      minusEls[k].disabled = counts[k] <= 0;
+      rowEls[k].classList.toggle('off', blockedBySpouse);
+    });
+  }
+
+  function render(r) {
+    var box = $('result');
+    box.textContent = '';
+
+    var s = 'أصل المسألة: ' + r.asl;
+    if (r.awlBase) s += ' — عالت إلى ' + r.awlBase;
+    if (r.radd) s += ' — فيها رد';
+    box.appendChild(el('div', 'summary', s));
+
+    var hasMoney = r.estate > 0;
+    r.rows.forEach(function (row) {
+      var blocked = row.status === 'محجوب' || row.status === 'لا شيء';
+      var card = el('div', 'card' + (blocked ? ' blocked' : ''));
+      var top = el('div', 'top');
+      var who = row.name + (row.count > 1 ? ' (' + row.count + ')' : '');
+      top.appendChild(el('span', 'who', who));
+      top.appendChild(el('span', 'badge', row.status));
+      card.appendChild(top);
+
+      if (!blocked) {
+        card.appendChild(el('div', 'share', row.share));
+        if (row.count > 1) card.appendChild(el('div', 'meta', 'لكل واحد: ' + row.perHead));
+        if (hasMoney) {
+          var m = 'المبلغ: ' + fmt(row.amount);
+          if (row.count > 1) m += ' — لكل واحد: ' + fmt(row.amountPerHead);
+          card.appendChild(el('div', 'money', m));
+        }
+      }
+      if (row.reason) card.appendChild(el('div', 'meta', row.reason));
+      box.appendChild(card);
+    });
+
+    if (r.unassigned !== '0') {
+      var u = el('div', 'card');
+      u.appendChild(el('div', 'who', 'الباقي غير الموزَّع: ' + r.unassigned));
+      if (hasMoney) u.appendChild(el('div', 'money', 'المبلغ: ' + fmt(r.unassignedAmount)));
+      box.appendChild(u);
+    }
+
+    if (r.notes.length) {
+      var ul = el('ul', 'notes');
+      r.notes.forEach(function (n) { ul.appendChild(el('li', null, n)); });
+      box.appendChild(ul);
+    }
+    box.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  $('calc').addEventListener('click', function () {
+    $('error').textContent = '';
+    $('result').textContent = '';
+    var estate = parseFloat($('estate').value);
+    if (!(estate > 0)) estate = 0;
+    try {
+      var r = Hanafi.calculate(counts, estate, { spouseRadd: $('spouseRadd').checked });
+      render(r);
+    } catch (e) {
+      $('error').textContent = e.message;
+    }
+  });
+
+  $('reset').addEventListener('click', function () {
+    Object.keys(counts).forEach(function (k) { counts[k] = 0; });
+    $('estate').value = '';
+    $('spouseRadd').checked = false;
+    $('error').textContent = '';
+    $('result').textContent = '';
+    refresh();
+  });
+
+  buildForm();
+})();
+</script>
+</body>
+</html>
